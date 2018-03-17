@@ -1070,7 +1070,7 @@ func (p *Redis) SIsMember(ctx context.Context, key string, arg interface{}) (err
 }
 
 
-// SRem
+
 func (p *Redis) SMEMBERS(ctx context.Context, key string, arg interface{}) (err error) {
 
 	refValue:=reflect.ValueOf(arg)
@@ -1110,7 +1110,7 @@ func (p *Redis) SMEMBERS(ctx context.Context, key string, arg interface{}) (err 
 	}
 	return
 }
-
+// SRem
 func (p *Redis) SRem(ctx context.Context, key string, argPs []interface{}) (err error) {
 
 	args := make([]interface{}, len(argPs)+1)
