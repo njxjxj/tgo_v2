@@ -1069,7 +1069,48 @@ func (p *Redis) SIsMember(ctx context.Context, key string, arg interface{}) (err
 	return
 }
 
+
 // SRem
+func (p *Redis) SMEMBERS(ctx context.Context, key string, arg interface{}) (err error) {
+
+	refValue:=reflect.ValueOf(arg)
+
+	key = p.getKey(key)
+
+
+	refSlice := refValue.Elem()
+	refItem := refSlice.Type().Elem()
+
+	result, errDo := redis.ByteSlices(p.Do(ctx, "SMEMBERS",key))
+
+	if errDo != nil {
+		log.Errorf("run redis %s command failed: error:%s,args:%v", "SMEMBERS", errDo.Error(), arg)
+
+		err = terror.New(pconst.ERROR_REDIS_MGET_DO)
+
+		return
+	}
+
+	if result == nil {
+		return nil
+	}
+
+	if len(result) > 0 {
+
+		for i := 0; i < len(result); i++ {
+			r := result[i]
+			if r != nil {
+				res,_:=redis.String(r,nil)
+				resValue:=reflect.ValueOf(res)
+				refSlice.Set(reflect.Append(refSlice,resValue ))
+			} else {
+				refSlice.Set(reflect.Append(refSlice, reflect.Zero(refItem)))
+			}
+		}
+	}
+	return
+}
+
 func (p *Redis) SRem(ctx context.Context, key string, argPs []interface{}) (err error) {
 
 	args := make([]interface{}, len(argPs)+1)
